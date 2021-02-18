@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @EqualsAndHashCode
 @Data
-public class Pet {
+public class Pet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

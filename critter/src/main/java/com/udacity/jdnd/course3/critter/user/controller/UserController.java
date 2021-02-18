@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.user.controller;
 
+import com.udacity.jdnd.course3.critter.pet.model.Pet;
 import com.udacity.jdnd.course3.critter.pet.service.PetService;
 import com.udacity.jdnd.course3.critter.user.dto.CustomerDTO;
 import com.udacity.jdnd.course3.critter.user.dto.EmployeeDTO;
@@ -10,6 +11,7 @@ import com.udacity.jdnd.course3.critter.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -109,6 +111,16 @@ public class UserController {
         else {
             CustomerDTO customerDTO = new CustomerDTO();
             copyProperties(customer, customerDTO);
+            //Convert List of pets to petIds
+            List<Long> petIds = new ArrayList<>();
+            List<Pet> pets = customer.getPets();
+
+            if (pets != null) {
+                for (Pet p : pets) {
+                    petIds.add(p.getId());
+                }
+                customerDTO.setPetIds(petIds);
+            }
             return customerDTO;
         }
     }

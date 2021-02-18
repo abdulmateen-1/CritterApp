@@ -7,13 +7,12 @@ import com.udacity.jdnd.course3.critter.schedule.model.Schedule;
 import com.udacity.jdnd.course3.critter.schedule.service.ScheduleService;
 import com.udacity.jdnd.course3.critter.user.exception.EmployeeNotFoundException;
 import com.udacity.jdnd.course3.critter.user.repository.EmployeeRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.SerializationUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.BeanUtils.*;
@@ -87,10 +86,15 @@ public class ScheduleController {
 
     private ScheduleDTO convertToScheduleDTO(Schedule schedule) {
         ScheduleDTO scheduleDTO = new ScheduleDTO();
-        copyProperties(schedule, scheduleDTO);
+        copyProperties(deepClone(schedule), scheduleDTO);
         schedule.getPets().forEach(pet -> scheduleDTO.getPetIds().add(pet.getId()));
         schedule.getEmployees().forEach(employee -> scheduleDTO.getEmployeeIds().add(employee.getId()));
         return scheduleDTO;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Serializable> T deepClone(T object) {
+        return (T) SerializationUtils.deserialize(SerializationUtils.serialize(object));
     }
 
     private List<ScheduleDTO> convertToListToScheduleDTO(List<Schedule> schedules) {

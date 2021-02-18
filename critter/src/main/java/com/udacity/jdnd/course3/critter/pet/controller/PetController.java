@@ -3,6 +3,7 @@ package com.udacity.jdnd.course3.critter.pet.controller;
 import com.udacity.jdnd.course3.critter.pet.dto.PetDTO;
 import com.udacity.jdnd.course3.critter.pet.model.Pet;
 import com.udacity.jdnd.course3.critter.pet.service.PetService;
+import com.udacity.jdnd.course3.critter.user.model.Customer;
 import com.udacity.jdnd.course3.critter.user.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,9 @@ public class PetController {
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
         Pet pet = convertPetDTOToPet(petDTO);
-        if (petDTO.getOwnerId() != null)
-            pet.setOwner(userService.getOwnerByPetId(petDTO.getOwnerId()));
-        pet = petService.savePet(pet);
-        return convertPetToPetDTO(pet);
+        Pet savedPet = petService.savePet(pet);
+
+        return convertPetToPetDTO(savedPet);
     }
 
     @GetMapping("/{petId}")
@@ -60,6 +60,10 @@ public class PetController {
     public Pet convertPetDTOToPet(PetDTO petDTO) {
         Pet pet = new Pet();
         copyProperties(petDTO, pet);
+
+        Long userId = petDTO.getOwnerId();
+        Customer customer = userService.getCustomerById(userId);
+        pet.setOwner(customer);
         return pet;
     }
 
@@ -68,6 +72,7 @@ public class PetController {
         else {
             PetDTO petDTO = new PetDTO();
             copyProperties(pet, petDTO);
+            petDTO.setOwnerId(pet.getOwner().getId());
             return petDTO;
         }
     }

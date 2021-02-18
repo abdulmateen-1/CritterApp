@@ -3,10 +3,12 @@ package com.udacity.jdnd.course3.critter.pet.service;
 import com.udacity.jdnd.course3.critter.pet.exception.PetNotFoundException;
 import com.udacity.jdnd.course3.critter.pet.model.Pet;
 import com.udacity.jdnd.course3.critter.pet.repository.PetRepository;
+import com.udacity.jdnd.course3.critter.user.model.Customer;
 import com.udacity.jdnd.course3.critter.user.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,10 +25,17 @@ public class PetService {
     }
 
     public Pet savePet(Pet pet) {
-        pet = petRepository.save(pet);
-        pet.getOwner().addPet(pet);
-        customerRepository.save(pet.getOwner());
-        return pet;
+        Pet savedPet = petRepository.save(pet);
+        Customer customer = savedPet.getOwner();
+
+        List<Pet> customerPets = customer.getPets();
+        if (customerPets == null) {
+            customerPets = new ArrayList<>();
+        }
+        customerPets.add(savedPet);
+        customer.setPets(customerPets);
+        customerRepository.save(customer);
+        return savedPet;
     }
 
     public Pet getPetById(Long Id) {

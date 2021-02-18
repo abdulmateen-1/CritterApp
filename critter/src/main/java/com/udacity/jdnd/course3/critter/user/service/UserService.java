@@ -33,6 +33,10 @@ public class UserService {
         this.petRepository = petRepository;
     }
 
+    public Customer getCustomerById(long customerId) {
+        return customerRepository.getOne(customerId);
+    }
+
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
